@@ -1,0 +1,4 @@
+host: ldap://host.exsample.com
+user: CN=example,CN=Users,DC=example,DC=com
+password: example
+baseDN: dc=example,DC=com
