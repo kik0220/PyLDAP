@@ -1,6 +1,7 @@
 import os, yaml
 import gradio as gr
 from ldap3 import Server, Connection, ALL, SUBTREE
+import subprocess
 
 config = {}
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -89,6 +90,16 @@ def get_computerlist():
     conn.unbind()
     return display_result
 
+def ntfs_acl(input_folder):
+    display_result = ""
+    command = 'powershell "Get-Acl ' + input_folder + ' | Select-Object Owner | Format-Table -AutoSize -Wrap"'
+    result = subprocess.run(command, capture_output=True, text=True, shell=True)
+    display_result = result.stdout
+    command = 'powershell "Get-Acl ' + input_folder + ' | Select-Object AccessToString | Format-Table -AutoSize -Wrap"'
+    result = subprocess.run(command, capture_output=True, text=True, shell=True)
+    display_result += result.stdout
+    return display_result
+
 with gr.Blocks(title="PyLDAP") as demo:
     with gr.Row():
         with gr.Tab("ユーザー"):
@@ -103,12 +114,15 @@ with gr.Blocks(title="PyLDAP") as demo:
             input_computer = gr.Textbox(placeholder="Enterで確定",show_label=False)
         with gr.Tab("コンピューター一覧"):
             button_computerlist = gr.Button("取得",variant="primary")
+        with gr.Tab("NTFS ACL"):
+            input_folder = gr.Textbox(placeholder="Enterで確定",show_label=False)
     with gr.Row():
         display_result = gr.Textbox(label="結果", max_lines=50)
 
     input_user.submit(get_user,input_user,display_result)
     input_group.submit(get_group,input_group,display_result)
     input_computer.submit(get_computer,input_computer,display_result)
+    input_folder.submit(ntfs_acl,input_folder,display_result)
     button_userlist.click(get_userlist,outputs=display_result)
     button_grouplist.click(get_grouplist,outputs=display_result)
     button_computerlist.click(get_computerlist,outputs=display_result)
