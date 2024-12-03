@@ -2,3 +2,6 @@ host: ldap://host.exsample.com
 user: CN=example,CN=Users,DC=example,DC=com
 password: example
 baseDN: dc=example,DC=com
+tenantId: 00000000-0000-0000-0000-000000000000
+appId: 00000000-0000-0000-0000-000000000000
+appSecret: 
